@@ -1,5 +1,8 @@
 # FormulaAnalysis
-
+Spring Boot microservice with the following:  
+  - Ingestion of Formula 1 telemetry from OpenF1API
+  - Modeling and Analysis of telemetry
+  - REST API for persisting to and requesting from MongoDB
 ## Project Architecture
 ![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/FormulaAnalysis.drawio.svg?raw=true)
 
