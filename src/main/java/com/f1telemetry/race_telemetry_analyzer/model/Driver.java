@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "drivers") // This tells Spring that this class maps to the "drivers" collection in MongoDB
 public class Driver {
 
-    // Getters and Setters
     @Id
     private String id;
     private String name;

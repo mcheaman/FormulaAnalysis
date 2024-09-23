@@ -30,5 +30,7 @@ public class DriverService {
         driverRepository.deleteById(id);
     }
 
+    public Optional<Driver> getDriverByName(String driverName) {return driverRepository.findByName(driverName);}
+
     // Other methods to update or find drivers can go here
 }
