@@ -81,7 +81,7 @@ public class DriverControllerTests {
     @Test
     void testAddDriver() {
         // Arrange
-        Driver newDriver = new Driver("Lando Norris", "McLaren");
+        Driver newDriver = new Driver("Lewis Hamilton", "Mercedes");
         when(driverService.addDriver(any(Driver.class))).thenReturn(newDriver);
 
         // Act

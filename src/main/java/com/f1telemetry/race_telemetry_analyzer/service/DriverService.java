@@ -32,5 +32,20 @@ public class DriverService {
 
     public Optional<Driver> getDriverByName(String driverName) {return driverRepository.findByName(driverName);}
 
-    // Other methods to update or find drivers can go here
+    // New method to update the driver by name (or any other field)
+    public Driver updateDriver(String name, Driver updatedDriverInfo) {
+        Optional<Driver> existingDriver = driverRepository.findByName(name);
+
+        if (existingDriver.isPresent()) {
+            Driver driver = existingDriver.get();
+            driver.setName(updatedDriverInfo.getName());
+            driver.setTeam(updatedDriverInfo.getTeam());
+            driver.setCountry_code(updatedDriverInfo.getCountry_code());
+            driver.setDriver_number(updatedDriverInfo.getDriver_number());
+            driver.setHeadshot_url(updatedDriverInfo.getHeadshot_url());
+            return driverRepository.save(driver);
+        } else {
+            throw new IllegalArgumentException("Driver not found with name: " + name);
+        }
+    }
 }

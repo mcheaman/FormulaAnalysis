@@ -43,6 +43,17 @@ public class DriverController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDriver);
     }
 
+    @PutMapping("/{name}")
+    public ResponseEntity<Driver> updateDriver(@PathVariable String name, @RequestBody Driver updatedDriverInfo) {
+        try {
+            Driver updatedDriver = driverService.updateDriver(name, updatedDriverInfo);
+            return ResponseEntity.ok(updatedDriver);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDriver(@PathVariable String id) {
         logger.info("Deleting driver with id: {}", id);

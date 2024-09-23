@@ -35,8 +35,10 @@ public class OpenF1ApiControllerTests {
     void testImportDriversSuccess() throws IOException, InterruptedException {
         // Arrange
         List<Driver> mockDrivers = new ArrayList<>();
-        mockDrivers.add(new Driver("Lewis Hamilton", "Mercedes"));
-        mockDrivers.add(new Driver("Max Verstappen", "Red Bull"));
+        Driver driver1 = new Driver("Lewis Hamilton", "Mercedes");
+        Driver driver2 = new Driver("Max Verstappen", "Red Bull");
+        mockDrivers.add(driver1);
+        mockDrivers.add(driver2);
 
         when(openF1ApiService.fetchDriversFromOpenF1()).thenReturn(mockDrivers);
 

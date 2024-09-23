@@ -14,6 +14,9 @@ public class Driver {
     private String id;
     private String name;
     private String team;
+    private String country_code;
+    private Integer driver_number;
+    private String headshot_url;
 
 
     // Constructors
@@ -22,6 +25,14 @@ public class Driver {
     public Driver(String name, String team) {
         this.name = name;
         this.team = team;
+    }
+
+    public Driver(String name, String team, String country_code, Integer driver_number, String headshot_url) {
+        this.name = name;
+        this.team = team;
+        this.country_code = country_code;
+        this.driver_number = driver_number;
+        this.headshot_url = headshot_url;
     }
 }
 

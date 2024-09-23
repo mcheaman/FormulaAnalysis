@@ -3,6 +3,8 @@ package com.f1telemetry.race_telemetry_analyzer.service;
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +22,15 @@ public class OpenF1ApiService {
     @Autowired
     private DriverService driverService;
 
-    private static final String API_URL = "https://api.openf1.org/v1/drivers?session_key=latest"; // latest used to only access drivers from the latest session
-
+    private static final String DRIVER_API_URL = "https://api.openf1.org/v1/drivers?session_key=latest"; // latest used to only access drivers from the latest session
+    private static final Logger logger = LoggerFactory.getLogger(OpenF1ApiService.class);
     public List<Driver> fetchDriversFromOpenF1() throws IOException, InterruptedException {
         // Create the HttpClient
         HttpClient client = HttpClient.newHttpClient();
 
         // Create the HttpRequest
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL))
+                .uri(URI.create(DRIVER_API_URL))
                 .header("Accept", "application/json")
                 .build();
 
@@ -44,17 +46,24 @@ public class OpenF1ApiService {
 
             // Loop through each driver node in the array
             for (JsonNode driverNode : rootNode) {
-                System.out.println(driverNode);
                 String driverName = driverNode.get("full_name").asText();
                 Optional<Driver> existingDriver = driverService.getDriverByName(driverName);  // Check if driver exists by name
+                Driver importedDriverInfo = new Driver(
+                        driverName,
+                        driverNode.get("team_name").asText(),
+                        driverNode.get("country_code").asText(),
+                        driverNode.get("driver_number").asInt(),
+                        driverNode.get("headshot_url").asText()
+                );
 
-                if (existingDriver.isEmpty()) {  // Only add if driver doesn't already exist
-                    Driver driver = new Driver();
-                    driver.setName(driverName);
-                    driver.setTeam(driverNode.get("team_name").asText());  // Adjust based on actual fields
-
-
-                    driverService.addDriver(driver);
+                if (existingDriver.isPresent()) {
+                    // Update the existing driver
+                    logger.info("Updating driver: {}", driverName);
+                    driverService.updateDriver(driverName, importedDriverInfo);
+                } else {
+                    // Add new driver
+                    logger.info("Adding new driver: {}", driverName);
+                    driverService.addDriver(importedDriverInfo);
                 }
             }
         } else {
