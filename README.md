@@ -1,5 +1,8 @@
 # FormulaAnalysis
 
+## Project Architecture
+![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/FormulaAnalysis.drawio.svg?raw=true)
+
 ## Project Structure
 
 ### [model](https://github.com/mcheaman/FormulaAnalysis/tree/main/src/main/java/com/f1telemetry/race_telemetry_analyzer/model)
