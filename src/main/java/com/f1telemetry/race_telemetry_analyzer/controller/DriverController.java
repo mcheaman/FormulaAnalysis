@@ -1,8 +1,9 @@
 package com.f1telemetry.race_telemetry_analyzer.controller;
 
+import com.f1telemetry.race_telemetry_analyzer.controller.OpenF1API.DriverAPIController;
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
 import com.f1telemetry.race_telemetry_analyzer.service.DriverService;
-import com.f1telemetry.race_telemetry_analyzer.service.OpenF1ApiService;
+import com.f1telemetry.race_telemetry_analyzer.service.OpenF1API.DriverAPIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class DriverController {
 
 
     private final DriverService driverService;
-    private static final Logger logger = LoggerFactory.getLogger(OpenF1ApiController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DriverAPIController.class);
 
-    public DriverController(DriverService driverService, OpenF1ApiService openF1ApiService) {
+    public DriverController(DriverService driverService) {
         this.driverService = driverService;
     }
 

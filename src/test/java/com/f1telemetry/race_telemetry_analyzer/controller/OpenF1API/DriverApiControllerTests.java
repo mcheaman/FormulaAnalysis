@@ -1,7 +1,7 @@
-package com.f1telemetry.race_telemetry_analyzer.controller;
+package com.f1telemetry.race_telemetry_analyzer.controller.OpenF1API;
 
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
-import com.f1telemetry.race_telemetry_analyzer.service.OpenF1ApiService;
+import com.f1telemetry.race_telemetry_analyzer.service.OpenF1API.DriverAPIService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,13 +17,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class OpenF1ApiControllerTests {
+public class DriverApiControllerTests {
 
     @Mock
-    private OpenF1ApiService openF1ApiService;
+    private DriverAPIService driverAPIService;
 
     @InjectMocks
-    private OpenF1ApiController openF1ApiController;
+    private DriverAPIController driverAPIController;
 
     @BeforeEach
     void setUp() {
@@ -40,41 +40,41 @@ public class OpenF1ApiControllerTests {
         mockDrivers.add(driver1);
         mockDrivers.add(driver2);
 
-        when(openF1ApiService.fetchDriversFromOpenF1()).thenReturn(mockDrivers);
+        when(driverAPIService.fetchDriversFromOpenF1()).thenReturn(mockDrivers);
 
         // Act
-        ResponseEntity<List<Driver>> response = openF1ApiController.importDriversFromOpenF1();
+        ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
-        verify(openF1ApiService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
     }
 
     @Test
     void testImportDriversIOException() throws IOException, InterruptedException {
         // Arrange
-        when(openF1ApiService.fetchDriversFromOpenF1()).thenThrow(new IOException("API failed"));
+        when(driverAPIService.fetchDriversFromOpenF1()).thenThrow(new IOException("API failed"));
 
         // Act
-        ResponseEntity<List<Driver>> response = openF1ApiController.importDriversFromOpenF1();
+        ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(openF1ApiService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
     }
 
     @Test
     void testImportDriversInterruptedException() throws IOException, InterruptedException {
         // Arrange
-        when(openF1ApiService.fetchDriversFromOpenF1()).thenThrow(new InterruptedException("Operation interrupted"));
+        when(driverAPIService.fetchDriversFromOpenF1()).thenThrow(new InterruptedException("Operation interrupted"));
 
         // Act
-        ResponseEntity<List<Driver>> response = openF1ApiController.importDriversFromOpenF1();
+        ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(openF1ApiService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
     }
 
 }

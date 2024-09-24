@@ -1,7 +1,7 @@
-package com.f1telemetry.race_telemetry_analyzer.controller;
+package com.f1telemetry.race_telemetry_analyzer.controller.OpenF1API;
 
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
-import com.f1telemetry.race_telemetry_analyzer.service.OpenF1ApiService;
+import com.f1telemetry.race_telemetry_analyzer.service.OpenF1API.DriverAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,22 +14,19 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
-@RequestMapping("/api/openf1")
-public class OpenF1ApiController {
+@RequestMapping("/api/openf1/drivers")
+public class DriverAPIController {
 
-    private static final Logger logger = LoggerFactory.getLogger(OpenF1ApiController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DriverAPIController.class);
 
     @Autowired
-    private OpenF1ApiService openF1ApiService;
+    private DriverAPIService driverAPIService;
 
     @GetMapping("/import-drivers")
     public ResponseEntity<List<Driver>> importDriversFromOpenF1() {
         try {
-            List<Driver> drivers = openF1ApiService.fetchDriversFromOpenF1();
+            List<Driver> drivers = driverAPIService.fetchDriversFromOpenF1();
             return ResponseEntity.ok(drivers);
         } catch (IOException | InterruptedException e) {
             logger.error("Error occurred while fetching drivers from OpenF1 API", e);

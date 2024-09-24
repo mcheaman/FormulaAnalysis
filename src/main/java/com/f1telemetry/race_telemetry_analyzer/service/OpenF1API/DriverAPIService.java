@@ -1,6 +1,7 @@
-package com.f1telemetry.race_telemetry_analyzer.service;
+package com.f1telemetry.race_telemetry_analyzer.service.OpenF1API;
 
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
+import com.f1telemetry.race_telemetry_analyzer.service.DriverService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -17,13 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OpenF1ApiService {
+public class DriverAPIService {
 
     @Autowired
     private DriverService driverService;
 
     private static final String DRIVER_API_URL = "https://api.openf1.org/v1/drivers?session_key=latest"; // latest used to only access drivers from the latest session
-    private static final Logger logger = LoggerFactory.getLogger(OpenF1ApiService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DriverAPIService.class);
     public List<Driver> fetchDriversFromOpenF1() throws IOException, InterruptedException {
         // Create the HttpClient
         HttpClient client = HttpClient.newHttpClient();
