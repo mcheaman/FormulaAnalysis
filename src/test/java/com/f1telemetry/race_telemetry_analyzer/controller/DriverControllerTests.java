@@ -45,7 +45,7 @@ public class DriverControllerTests {
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("Lewis Hamilton", result.getFirst().getName());
+        assertEquals("Lewis Hamilton", result.getFirst().getFullName());
         verify(driverService, times(1)).getAllDrivers();
     }
 
@@ -88,7 +88,7 @@ public class DriverControllerTests {
         ResponseEntity<Driver> result = driverController.addDriver(newDriver);
 
         // Assert
-        assertEquals("Lando Norris", Objects.requireNonNull(result.getBody()).getName());
+        assertEquals("Lando Norris", Objects.requireNonNull(result.getBody()).getFullName());
         verify(driverService, times(1)).addDriver(newDriver);
     }
 
