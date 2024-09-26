@@ -39,7 +39,6 @@ public class DriverController {
 
     @PostMapping
     public ResponseEntity<Driver> addDriver(@Validated @RequestBody Driver driver) {
-        logger.info("Adding a new driver: {}", driver.getName());
         Driver savedDriver = driverService.addDriver(driver);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDriver);
     }
@@ -47,7 +46,7 @@ public class DriverController {
     @PutMapping("/{name}")
     public ResponseEntity<Driver> updateDriver(@PathVariable String name, @RequestBody Driver updatedDriverInfo) {
         try {
-            Driver updatedDriver = driverService.updateDriver(name, updatedDriverInfo);
+            Driver updatedDriver = driverService.addDriver(updatedDriverInfo);
             return ResponseEntity.ok(updatedDriver);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

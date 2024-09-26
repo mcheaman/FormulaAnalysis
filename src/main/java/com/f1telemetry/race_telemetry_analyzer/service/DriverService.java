@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,27 +26,14 @@ public class DriverService {
     public Driver addDriver(Driver driver) {
         return driverRepository.save(driver);
     }
+    public List<Driver> addDrivers(List<Driver> driversToAdd) {
+        return driverRepository.saveAll(driversToAdd);
+    }
 
     public void deleteDriver(String id) {
         driverRepository.deleteById(id);
     }
 
-    public Optional<Driver> getDriverByName(String driverName) {return driverRepository.findByName(driverName);}
+    public Optional<Driver> getDriverByName(String driverName) {return driverRepository.findByFullName(driverName);}
 
-    // New method to update the driver by name (or any other field)
-    public Driver updateDriver(String name, Driver updatedDriverInfo) {
-        Optional<Driver> existingDriver = driverRepository.findByName(name);
-
-        if (existingDriver.isPresent()) {
-            Driver driver = existingDriver.get();
-            driver.setName(updatedDriverInfo.getName());
-            driver.setTeam(updatedDriverInfo.getTeam());
-            driver.setCountry_code(updatedDriverInfo.getCountry_code());
-            driver.setDriver_number(updatedDriverInfo.getDriver_number());
-            driver.setHeadshot_url(updatedDriverInfo.getHeadshot_url());
-            return driverRepository.save(driver);
-        } else {
-            throw new IllegalArgumentException("Driver not found with name: " + name);
-        }
-    }
 }

@@ -11,28 +11,29 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Driver {
 
     @Id
-    private String id;
-    private String name;
+    private String fullName;
+    private String broadcastName;
     private String team;
-    private String country_code;
-    private Integer driver_number;
-    private String headshot_url;
+    private String countryCode;
+    private Integer driverNumber;
+    private String headshotUrl;
 
 
     // Constructors
     public Driver() {}
 
-    public Driver(String name, String team) {
-        this.name = name;
+    public Driver(String fullName, String team) {
+        this.fullName = fullName;
         this.team = team;
     }
 
-    public Driver(String name, String team, String country_code, Integer driver_number, String headshot_url) {
-        this.name = name;
+    public Driver(String fullName, String broadcastName, String team, String countryCode, Integer driverNumber, String headshotUrl) {
+        this.fullName = fullName;
+        this.broadcastName = broadcastName;
         this.team = team;
-        this.country_code = country_code;
-        this.driver_number = driver_number;
-        this.headshot_url = headshot_url;
+        this.countryCode = countryCode;
+        this.driverNumber = driverNumber;
+        this.headshotUrl = headshotUrl;
     }
 }
 

@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface DriverRepository extends MongoRepository<Driver, String> {
     // Custom query methods will be added here when needed, e.g., findByName, findByTeam, etc.
-    Optional<Driver> findByName(String name);
+    Optional<Driver> findByFullName(String name);
 }
