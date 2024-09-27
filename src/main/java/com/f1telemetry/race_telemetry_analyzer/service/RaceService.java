@@ -20,10 +20,10 @@ public class RaceService {
     }
 
     // Method to return a list of session keys from all races
-    public List<String> getAllSessionKeys() {
+    public List<Integer> getAllSessionKeys() {
         // Retrieve all races and map the session_key from each race to a list
         return raceRepository.findAll().stream()
-                .map(Race::getSession_key)  // Extract the session_key from each Race object
+                .map(Race::getSessionKey)  // Extract the session_key from each Race object
                 .collect(Collectors.toList()); // Collect the session_key values into a List
     }
 
