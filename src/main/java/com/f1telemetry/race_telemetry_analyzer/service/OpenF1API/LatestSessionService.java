@@ -14,6 +14,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -54,7 +56,6 @@ public class LatestSessionService {
     public boolean isNewSessionAvailable() throws IOException, InterruptedException {
         // Fetch the latest session from OpenF1 API
         JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1().get(0);
-        logger.error("**************{}******************", latestSessionFromAPI);
         Integer latestSessionKeyFromAPI = latestSessionFromAPI.get("session_key").asInt();
 
         // Get the latest session saved in the database
@@ -66,12 +67,9 @@ public class LatestSessionService {
 
             // If the session keys are different, new data is available
             if (!latestSessionKeyFromAPI.equals(latestSessionKeyFromDB)) {
-                updateLatestSession(latestSessionFromAPI);
                 return true;  // New session available
             }
         } else {
-            // No session exists in the database, so new data is available
-            updateLatestSession(latestSessionFromAPI);
             return true;
         }
 
@@ -83,10 +81,17 @@ public class LatestSessionService {
         latestSessionRepository.save(latestSession);
     }
     // Method to update the database with the latest session after import
-    public void updateLatestSession(JsonNode latestSessionFromAPI) {
+    public void updateLatestSession() throws IOException, InterruptedException {
+        JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1();
+        // Parse the end date string into a ZonedDateTime (to handle the time zone)
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(latestSessionFromAPI.get(0).get("date_end").asText());
+        // Convert to LocalDate and format to the desired pattern (yyyy-MM-dd)
+        String formattedDate = zonedDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         LatestSession newLatestSession = new LatestSession(
                 "latest_session_id",  // Static ID to ensure single document
                 latestSessionFromAPI.get("session_key").asInt(),
+                formattedDate,
                 latestSessionFromAPI.get("session_name").asText()
         );
         saveLatestSession(newLatestSession);  // Save or update in the database

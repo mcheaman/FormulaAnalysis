@@ -17,5 +17,6 @@ public class LatestSession {
     @Id
     private String id = "latest_session_id";  // Single document for latest session
     private Integer sessionKey;
+    private String sessionEndDate;
     private String sessionName;
 }
