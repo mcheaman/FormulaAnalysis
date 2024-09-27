@@ -37,7 +37,7 @@ public class RaceController {
 
     @PostMapping
     public ResponseEntity<Race> addRace(@Validated @RequestBody Race race) {
-        logger.info("Adding a new race: {}", race.getSession_key());
+        logger.info("Adding a new race: {}", race.getSessionKey());
         Race savedRace = raceService.addRace(race);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRace);
     }
