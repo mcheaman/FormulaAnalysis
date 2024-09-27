@@ -34,8 +34,8 @@ class RaceServiceTest {
     void getAllRaces_ShouldReturnAllRaces() {
         // Arrange
         List<Race> mockRaces = Arrays.asList(
-                new Race("session1", 2022, "Sprint", "Country A", "Circuit A"),
-                new Race("session2", 2022, "Race", "Country B", "Circuit B")
+                new Race(1, 2022, "Sprint", "Country A", "Circuit A"),
+                new Race(2, 2022, "Race", "Country B", "Circuit B")
         );
         when(raceRepository.findAll()).thenReturn(mockRaces);
 
@@ -52,16 +52,16 @@ class RaceServiceTest {
     void getAllSessionKeys_ShouldReturnAllSessionKeys() {
         // Arrange
         List<Race> mockRaces = Arrays.asList(
-                new Race("session1", 2022, "Sprint", "Country A", "Circuit A"),
-                new Race("session2", 2022, "Race", "Country B", "Circuit B")
+                new Race(1, 2022, "Sprint", "Country A", "Circuit A"),
+                new Race(2, 2022, "Race", "Country B", "Circuit B")
         );
         when(raceRepository.findAll()).thenReturn(mockRaces);
 
         // Act
-        List<String> result = raceService.getAllSessionKeys();
+        List<Integer> result = raceService.getAllSessionKeys();
 
         // Assert
-        assertEquals(Arrays.asList("session1", "session2"), result);
+        assertEquals(Arrays.asList(1,2), result);
         verify(raceRepository, times(1)).findAll();
     }
 
@@ -69,8 +69,8 @@ class RaceServiceTest {
     @Test
     void getRaceBySessionKey_ShouldReturnRaceWhenSessionKeyExists() {
         // Arrange
-        Race mockRace = new Race("session1", 2022, "Race", "Country A", "Circuit A");
-        when(raceRepository.findById("session1")).thenReturn(Optional.of(mockRace));
+        Race mockRace = new Race(1, 2022, "Race", "Country A", "Circuit A");
+        when(raceRepository.findById(String.valueOf(1))).thenReturn(Optional.of(mockRace));
 
         // Act
         Optional<Race> result = raceService.getRaceBySessionKey("session1");
@@ -84,21 +84,21 @@ class RaceServiceTest {
     @Test
     void getRaceBySessionKey_ShouldReturnEmptyWhenSessionKeyDoesNotExist() {
         // Arrange
-        when(raceRepository.findById("session1")).thenReturn(Optional.empty());
+        when(raceRepository.findById("1")).thenReturn(Optional.empty());
 
         // Act
-        Optional<Race> result = raceService.getRaceBySessionKey("session1");
+        Optional<Race> result = raceService.getRaceBySessionKey("1");
 
         // Assert
         assertFalse(result.isPresent());
-        verify(raceRepository, times(1)).findById("session1");
+        verify(raceRepository, times(1)).findById("1");
     }
 
     // Test case for addRace()
     @Test
     void addRace_ShouldSaveAndReturnNewRace() {
         // Arrange
-        Race newRace = new Race("session3", 2022, "Race", "Country C", "Circuit C");
+        Race newRace = new Race(3, 2022, "Race", "Country C", "Circuit C");
         when(raceRepository.save(newRace)).thenReturn(newRace);
 
         // Act
@@ -115,8 +115,8 @@ class RaceServiceTest {
     void addRaces_ShouldSaveAndReturnMultipleRaces() {
         // Arrange
         List<Race> newRaces = Arrays.asList(
-                new Race("session3", 2022, "Race", "Country C", "Circuit C"),
-                new Race("session4", 2022, "Sprint", "Country D", "Circuit D")
+                new Race(3, 2022, "Race", "Country C", "Circuit C"),
+                new Race(4, 2022, "Sprint", "Country D", "Circuit D")
         );
         when(raceRepository.saveAll(newRaces)).thenReturn(newRaces);
 
@@ -132,7 +132,7 @@ class RaceServiceTest {
     @Test
     void deleteRace_ShouldDeleteRaceBySessionKey() {
         // Act
-        raceService.deleteRace("session1");
+        raceService.deleteRace("1");
 
         // Assert
         verify(raceRepository, times(1)).deleteById("session1");

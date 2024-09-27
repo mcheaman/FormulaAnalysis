@@ -32,7 +32,7 @@ public class DriverApiControllerTests {
 
     // Test cases go here...
     @Test
-    void testImportDriversSuccess() throws IOException, InterruptedException {
+    void testImportAllDriversSuccess() throws IOException, InterruptedException {
         // Arrange
         List<Driver> mockDrivers = new ArrayList<>();
         Driver driver1 = new Driver("Lewis Hamilton", "Mercedes");
@@ -40,7 +40,7 @@ public class DriverApiControllerTests {
         mockDrivers.add(driver1);
         mockDrivers.add(driver2);
 
-        when(driverAPIService.fetchDriversFromOpenF1()).thenReturn(mockDrivers);
+        when(driverAPIService.fetchAllDriversFromOpenF1()).thenReturn(mockDrivers);
 
         // Act
         ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
@@ -48,33 +48,33 @@ public class DriverApiControllerTests {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
-        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchAllDriversFromOpenF1();
     }
 
     @Test
     void testImportDriversIOException() throws IOException, InterruptedException {
         // Arrange
-        when(driverAPIService.fetchDriversFromOpenF1()).thenThrow(new IOException("API failed"));
+        when(driverAPIService.fetchAllDriversFromOpenF1()).thenThrow(new IOException("API failed"));
 
         // Act
         ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchAllDriversFromOpenF1();
     }
 
     @Test
     void testImportDriversInterruptedException() throws IOException, InterruptedException {
         // Arrange
-        when(driverAPIService.fetchDriversFromOpenF1()).thenThrow(new InterruptedException("Operation interrupted"));
+        when(driverAPIService.fetchAllDriversFromOpenF1()).thenThrow(new InterruptedException("Operation interrupted"));
 
         // Act
         ResponseEntity<List<Driver>> response = driverAPIController.importDriversFromOpenF1();
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        verify(driverAPIService, times(1)).fetchDriversFromOpenF1();
+        verify(driverAPIService, times(1)).fetchAllDriversFromOpenF1();
     }
 
 }
