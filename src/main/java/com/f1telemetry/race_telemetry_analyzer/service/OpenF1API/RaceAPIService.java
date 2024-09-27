@@ -1,5 +1,6 @@
 package com.f1telemetry.race_telemetry_analyzer.service.OpenF1API;
 
+import com.f1telemetry.race_telemetry_analyzer.model.LatestSession;
 import com.f1telemetry.race_telemetry_analyzer.model.Race;
 import com.f1telemetry.race_telemetry_analyzer.service.RaceService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -27,19 +30,30 @@ public class RaceAPIService {
     @Autowired
     private RaceService raceService;
 
-    private static final String RACE_API_URL = "https://api.openf1.org/v1/sessions?session_type=Race"; // session_type = race to filter out practice and qualifying
+    @Autowired
+    LatestSessionService latestSessionService;
+
+
     private static final Logger logger = LoggerFactory.getLogger(RaceAPIService.class);
 
 
     public List<Race> fetchRacesFromOpenF1() throws IOException, InterruptedException, ExecutionException {
+        String latestSessionEndDate = latestSessionService.getLatestSessionFromDB()
+                .map(LatestSession::getSessionEndDate)  // Get the sessionEndDate
+                .orElse("2024-01-01");  // Fallback to an early date if no session exists in the DB
+        // Encode the date_start> parameter
+        String encodedDateStart = URLEncoder.encode("date_start>" + latestSessionEndDate, StandardCharsets.UTF_8);
+
+        String racesApiUrl = "https://api.openf1.org/v1/sessions?session_type=Race&" + encodedDateStart;
         HttpClient client = HttpClient.newHttpClient();
+
 
         // List to hold races that need to be upserted
         List<Race> racesToAdd = new ArrayList<>();
 
         // Create the HttpRequest
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(RACE_API_URL))
+                .uri(URI.create(racesApiUrl))
                 .header("Accept", "application/json")
                 .build();
 
@@ -57,8 +71,8 @@ public class RaceAPIService {
 
                     // Loop through each race node in the array
                     for (JsonNode raceNode : rootNode) {
-                        String raceSessionKey = raceNode.get("session_key").asText();
-                        Optional<Race> existingRace = raceService.getRaceBySessionKey(raceSessionKey);  // Check if race exists by session_key
+                        Integer raceSessionKey = raceNode.get("session_key").asInt();
+                        Optional<Race> existingRace = raceService.getRaceBySessionKey(String.valueOf(raceSessionKey));  // Check if race exists by session_key
 
                         Race importedRaceInfo = new Race(
                                 raceSessionKey,
@@ -70,7 +84,7 @@ public class RaceAPIService {
 
                         // If race does not exist, add to the list for batch insertion
                         if (existingRace.isEmpty()) {
-                            logger.info("Scheduling race for addition: {}", raceSessionKey);
+                            logger.debug("Scheduling race for addition: {}", raceSessionKey);
                             synchronized (racesToAdd) {  // Synchronize access to shared list
                                 racesToAdd.add(importedRaceInfo);
                             }
@@ -92,7 +106,6 @@ public class RaceAPIService {
         // Perform batch upsert (both insert and update)
         if (!racesToAdd.isEmpty()) {
             raceService.addRaces(racesToAdd);  // Implement batch add in the service
-            logger.info("Added {} new races to the database.", racesToAdd.size());
         } else {
             logger.info("No new races to add.");
         }
