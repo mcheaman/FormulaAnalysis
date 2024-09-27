@@ -32,8 +32,8 @@ class LapServiceTest {
     void getAllLaps_ShouldReturnAllLaps() {
         // Arrange
         List<Lap> expectedLaps = Arrays.asList(
-                new Lap(1, 33, 1, 90.5f, 30.5f, 30.0f, 30.0f, 320),
-                new Lap(1, 33, 2, 91.2f, 30.4f, 30.2f, 30.6f, 318)
+                new Lap(1, 33, 1, 90.5f, 30.5f, 30.0f, 30.0f,false,  320),
+                new Lap(1, 33, 2, 91.2f, 30.4f, 30.2f, 30.6f, false, 318)
         );
         when(lapRepository.findAll()).thenReturn(expectedLaps);
 
@@ -52,8 +52,8 @@ class LapServiceTest {
         Integer sessionKey = 1;
         Integer driverNumber = 33;
         List<Lap> expectedLaps = Arrays.asList(
-                new Lap(sessionKey, driverNumber, 1, 90.5f, 30.5f, 30.0f, 30.0f, 320),
-                new Lap(sessionKey, driverNumber, 2, 91.2f, 30.4f, 30.2f, 30.6f, 318)
+                new Lap(sessionKey, driverNumber, 1, 90.5f, 30.5f, 30.0f, 30.0f, false,  320),
+                new Lap(sessionKey, driverNumber, 2, 91.2f, 30.4f, 30.2f, 30.6f,false,  318)
         );
         when(lapRepository.findBySessionKeyAndDriverNumber(sessionKey, driverNumber)).thenReturn(expectedLaps);
 
@@ -70,8 +70,8 @@ class LapServiceTest {
     void addLaps_ShouldSaveLapsToDatabase() {
         // Arrange
         List<Lap> lapsToSave = Arrays.asList(
-                new Lap(1, 33, 1, 90.5f, 30.5f, 30.0f, 30.0f, 320),
-                new Lap(1, 33, 2, 91.2f, 30.4f, 30.2f, 30.6f, 318)
+                new Lap(1, 33, 1, 90.5f, 30.5f, 30.0f, 30.0f,false,  320),
+                new Lap(1, 33, 2, 91.2f, 30.4f, 30.2f, 30.6f,false,  318)
         );
 
         // Act

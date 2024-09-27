@@ -18,6 +18,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -64,11 +65,12 @@ public class LapAPIService {
                                 sessionKey,
                                 driverNumber,
                                 lapNode.get("lap_number").asInt(),
-                                // Use null checks for lap_duration, sector1, sector2, sector3, and speed_trap_speed
+                                // Use null checks for remaining fields
                                 lapNode.hasNonNull("lap_duration") ? lapNode.get("lap_duration").floatValue() : 0.0f,
                                 lapNode.hasNonNull("duration_sector_1") ? lapNode.get("duration_sector_1").floatValue() : 0.0f,
                                 lapNode.hasNonNull("duration_sector_2") ? lapNode.get("duration_sector_2").floatValue() : 0.0f,
                                 lapNode.hasNonNull("duration_sector_3") ? lapNode.get("duration_sector_3").floatValue() : 0.0f,
+                                Objects.equals(lapNode.get("is_pit_out_lap").asText(), "true"),
                                 lapNode.hasNonNull("st_speed") ? lapNode.get("st_speed").asInt() : 0
                         );
                         lapsToAdd.add(lap);

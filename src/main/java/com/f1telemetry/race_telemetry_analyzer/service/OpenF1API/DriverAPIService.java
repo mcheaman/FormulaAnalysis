@@ -127,7 +127,7 @@ public class DriverAPIService {
                         driversToUpsert.add(driver);
                     }
                 } else {
-                    logger.info("Skipping invalid driver: {}", driver.toString());
+                    logger.debug("Skipping invalid driver: {}", driver.toString());
                 }
             }
         } catch (IOException e) {

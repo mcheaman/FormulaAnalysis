@@ -82,12 +82,11 @@ public class LatestSessionService {
     }
     // Method to update the database with the latest session after import
     public void updateLatestSession() throws IOException, InterruptedException {
-        JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1();
+        JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1().get(0);
         // Parse the end date string into a ZonedDateTime (to handle the time zone)
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(latestSessionFromAPI.get(0).get("date_end").asText());
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(latestSessionFromAPI.get("date_end").asText());
         // Convert to LocalDate and format to the desired pattern (yyyy-MM-dd)
         String formattedDate = zonedDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
         LatestSession newLatestSession = new LatestSession(
                 "latest_session_id",  // Static ID to ensure single document
                 latestSessionFromAPI.get("session_key").asInt(),

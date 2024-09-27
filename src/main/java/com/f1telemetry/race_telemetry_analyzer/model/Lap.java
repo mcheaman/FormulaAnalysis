@@ -23,8 +23,9 @@ public class Lap {
     private Float sector2;
     private Float sector3;
     private Integer speedTrapSpeed;
+    private Boolean isPitOutLap;
 
-    public Lap(Integer sessionKey, Integer driverNumber, Integer lapNumber, Float lapDuration, Float sector1, Float sector2, Float sector3, Integer speedTrapSpeed) {
+    public Lap(Integer sessionKey, Integer driverNumber, Integer lapNumber, Float lapDuration, Float sector1, Float sector2, Float sector3,Boolean isPitOutLap, Integer speedTrapSpeed) {
         this.id = sessionKey + "_" + driverNumber + "_" + lapNumber; // Create composite key
         this.sessionKey = sessionKey;
         this.driverNumber = driverNumber;
@@ -33,6 +34,7 @@ public class Lap {
         this.sector1 = sector1;
         this.sector2 = sector2;
         this.sector3 = sector3;
+        this.isPitOutLap = isPitOutLap;
         this.speedTrapSpeed = speedTrapSpeed;
     }
 }
