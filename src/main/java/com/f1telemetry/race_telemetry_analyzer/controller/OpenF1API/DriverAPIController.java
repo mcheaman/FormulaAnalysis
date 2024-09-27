@@ -26,7 +26,7 @@ public class DriverAPIController {
     @GetMapping("/import-drivers")
     public ResponseEntity<List<Driver>> importDriversFromOpenF1() {
         try {
-            List<Driver> drivers = driverAPIService.fetchDriversFromOpenF1();
+            List<Driver> drivers = driverAPIService.fetchAllDriversFromOpenF1();
             return ResponseEntity.ok(drivers);
         } catch (IOException | InterruptedException e) {
             logger.error("Error occurred while fetching drivers from OpenF1 API", e);
