@@ -3,7 +3,6 @@ package com.f1telemetry.race_telemetry_analyzer.controller;
 import com.f1telemetry.race_telemetry_analyzer.controller.OpenF1API.DriverAPIController;
 import com.f1telemetry.race_telemetry_analyzer.model.Driver;
 import com.f1telemetry.race_telemetry_analyzer.service.DriverService;
-import com.f1telemetry.race_telemetry_analyzer.service.OpenF1API.DriverAPIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
