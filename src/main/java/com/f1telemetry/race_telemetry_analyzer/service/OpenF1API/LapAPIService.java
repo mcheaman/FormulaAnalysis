@@ -22,6 +22,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Service for interacting with the OpenF1 API to fetch and manage lap data.
+ *
+ * <p>This service is responsible for sending requests to the OpenF1 API to retrieve lap data
+ * for specific sessions and drivers, and managing asynchronous persistence.
+ */
 @Service
 public class LapAPIService {
 
@@ -35,7 +41,16 @@ public class LapAPIService {
         this.lapService = lapService;
     }
 
-    // Method to import laps from OpenF1 API for a specific session and driver
+    /**
+     * Fetches laps from the OpenF1 API for a specific session and driver.
+     *
+     * @param sessionKey the session key identifying the race session
+     * @param driverNumber the driver's number
+     * @return a list of laps for the specified session and driver
+     * @throws IOException if an I/O error occurs during data fetching
+     * @throws InterruptedException if the thread is interrupted during data fetching
+     * @throws ExecutionException if an error occurs during the execution of an asynchronous task
+     */
     public List<Lap> fetchLapsBySessionAndDriverFromOpenF1(Integer sessionKey, Integer driverNumber) throws IOException, InterruptedException, ExecutionException {
         HttpClient client = HttpClient.newHttpClient();
 
@@ -88,7 +103,16 @@ public class LapAPIService {
         return lapsToAdd;
     }
 
-    // Fetches laps for all races and drivers
+    /**
+     * Fetches all laps for a specified set of races and drivers from the OpenF1 API.
+     *
+     * @param races a list of races to fetch laps for
+     * @param drivers a list of drivers to fetch laps for
+     * @return a list of all laps across all races
+     * @throws IOException if an I/O error occurs during data fetching
+     * @throws ExecutionException if an error occurs during the execution of an asynchronous task
+     * @throws InterruptedException if the thread is interrupted during data fetching
+     */
     public List<Lap> fetchLapsFromOpenF1(List<Race> races, List<Driver> drivers) throws IOException, ExecutionException, InterruptedException {
         List<Lap> allLaps = new ArrayList<>(); // This will store all laps across all races
         List<CompletableFuture<Void>> futures = new ArrayList<>();  // To keep track of asynchronous persistence
@@ -110,7 +134,7 @@ public class LapAPIService {
                 allLaps.addAll(lapsForThisRaceAndDriver);
             }
 
-            logger.info("{} laps fetched from {} {} {}", raceLaps.size(), race.getCircuitName(), race.getYear(), race.getSessionName());
+            logger.debug("{} laps fetched from {} {} {}", raceLaps.size(), race.getCircuitName(), race.getYear(), race.getSessionName());
 
             // Make a copy of raceLaps before passing to the asynchronous task
             List<Lap> lapsToPersist = new ArrayList<>(raceLaps);
@@ -122,7 +146,7 @@ public class LapAPIService {
             futures.add(future);
         }
 
-        logger.info("{} laps from {} races to be added to MongoDB", allLaps.size(), races.size());
+        logger.debug("{} laps from {} races to be added to MongoDB", allLaps.size(), races.size());
 
         // Wait for all persistence operations to complete
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();

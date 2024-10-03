@@ -22,6 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for interacting with the OpenF1 API to fetch and manage position data.
+ *
+ * <p>This service is responsible for sending requests to the OpenF1 API to retrieve position data
+ * for specific sessions and drivers, handling retries in case of rate limits.
+ */
 @Service
 public class PositionAPIService {
 
@@ -38,6 +44,15 @@ public class PositionAPIService {
     private static final int MAX_RETRIES = 5;  // Max number of retries on 429 errors
     private static final int INITIAL_DELAY_MS = 1000;  // Initial delay (in milliseconds) for retry after 429 errors
 
+    /**
+     * Fetches positions from the OpenF1 API for multiple races and drivers.
+     *
+     * @param races a list of races to fetch positions for
+     * @param drivers a list of drivers to fetch positions for
+     * @return a list of positions imported from OpenF1
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
     public List<Position> fetchPositionsFromOpenF1(List<Race> races, List<Driver> drivers) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         List<Position> allPositions = new ArrayList<>();  // This will store all positions
@@ -61,13 +76,24 @@ public class PositionAPIService {
 
         // Persist positions to MongoDB
         if (!allPositions.isEmpty()) {
-            logger.info("{} positions for {} drivers in {} races to be persisted to MongoDB", allPositions.size(), drivers.size(), races.size());
+            logger.debug("{} positions for {} drivers in {} races to be persisted to MongoDB", allPositions.size(), drivers.size(), races.size());
             positionService.addPositions(allPositions);  // Save positions to MongoDB
         }
 
         return allPositions;
     }
 
+    /**
+     * Fetches the position of a specific driver in a race session.
+     *
+     * @param client the HTTP client
+     * @param positionURL the URL to fetch position data
+     * @param sessionKey the session key of the race
+     * @param driverNumber the number of the driver
+     * @return the {@link Position} of the driver in the session, or {@code null} if not found
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
     private Position fetchPositionForDriverAndSession(HttpClient client, String positionURL, Integer sessionKey, Integer driverNumber) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(positionURL))
@@ -116,10 +142,14 @@ public class PositionAPIService {
         return null;  // Return null if max retries are exceeded
     }
 
-
-
-
-public List<Position> fetchAllPositionsFromOpenF1() throws IOException, InterruptedException {
+    /**
+     * Fetches all positions for all races and drivers from the OpenF1 API.
+     *
+     * @return a list of positions imported from OpenF1
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
+    public List<Position> fetchAllPositionsFromOpenF1() throws IOException, InterruptedException {
         return fetchPositionsFromOpenF1(raceService.getAllRaces(), driverService.getAllDrivers());
     }
 

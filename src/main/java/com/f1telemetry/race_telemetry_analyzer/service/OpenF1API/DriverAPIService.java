@@ -22,6 +22,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 
+/**
+ * Service responsible for fetching and managing driver data from the OpenF1 API.
+ *
+ * <p>This service handles asynchronous requests to the OpenF1 API to fetch driver data for a list of race sessions.
+ * It supports rate-limited requests using exponential backoff and retries and performs batch upsert of drivers into the database.
+ */
 @Service
 public class DriverAPIService {
 
@@ -33,19 +39,30 @@ public class DriverAPIService {
 
     private static final String DRIVER_API_BASE_URL = "https://api.openf1.org/v1/drivers?session_key=";
     private static final Logger logger = LoggerFactory.getLogger(DriverAPIService.class);
-
     private static final int INITIAL_DELAY_MS = 1000;  // Initial delay for exponential backoff
     private static final int MAX_RETRIES = 5;  // Max number of retries for rate-limited requests
     private final HttpClient client = HttpClient.newHttpClient();
 
-    // Helper method to validate driver information
+    /**
+     * Validates driver information before processing it.
+     *
+     * @param driver the driver to validate
+     * @return {@code true} if the driver is valid, {@code false} otherwise
+     */
     private boolean isValidDriver(Driver driver) {
         return driver.getTeam() != null && !driver.getTeam().equals("null") &&
                 driver.getCountryCode() != null && !driver.getCountryCode().equals("null") &&
                 driver.getDriverNumber() > 0;
     }
 
-    // Public method to fetch drivers from OpenF1 for multiple races
+    /**
+     * Fetches drivers from the OpenF1 API for multiple race sessions.
+     *
+     * @param races a list of races to fetch drivers for
+     * @return a list of drivers imported from OpenF1
+     * @throws IOException if there is an I/O error during the fetch
+     * @throws InterruptedException if the thread is interrupted during the fetch
+     */
     public List<Driver> fetchDriversFromOpenF1(List<Race> races) throws IOException, InterruptedException {
         List<Integer> sessionKeys = races.stream()
                 .map(Race::getSessionKey)
@@ -75,7 +92,17 @@ public class DriverAPIService {
         return driverService.getAllDrivers();
     }
 
-    // Wrapper method to send a request through sendRequestWithRetry
+    /**
+     * Sends an API request with retry support.
+     *
+     * @param sessionURL the session URL for the request
+     * @param sessionKey the session key to identify the request
+     * @param driversToUpsert the list to collect drivers for upserting
+     * @param semaphore semaphore to limit concurrency
+     * @param retryCount the current retry count
+     * @param delayMs the delay for retrying the request
+     * @return a {@link CompletableFuture} that completes when the request is done
+     */
     private CompletableFuture<Void> sendRequest(String sessionURL, Integer sessionKey, List<Driver> driversToUpsert, Semaphore semaphore, int retryCount, int delayMs) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(sessionURL))
@@ -89,7 +116,17 @@ public class DriverAPIService {
                 .whenComplete((result, ex) -> semaphore.release());  // Release the semaphore after the request is complete
     }
 
-    // Method to send a request and process the successful output, or handle a rate limit error
+    /**
+     * Sends a request and retries if necessary due to rate limiting (HTTP 429).
+     *
+     * @param request the request to send
+     * @param sessionURL the session URL
+     * @param sessionKey the session key
+     * @param driversToUpsert the list of drivers to upsert
+     * @param retryCount the current retry count
+     * @param delayMs the delay between retries
+     * @return a {@link CompletableFuture} that completes when the request is done
+     */
     private CompletableFuture<Void> sendRequestWithRetry(HttpRequest request, String sessionURL, Integer sessionKey, List<Driver> driversToUpsert, int retryCount, int delayMs) {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(response -> {
@@ -105,7 +142,12 @@ public class DriverAPIService {
                 });
     }
 
-    // Method to process the API response for drivers
+    /**
+     * Processes the API response and extracts valid driver data.
+     *
+     * @param jsonResponse the JSON response from the API
+     * @param driversToUpsert the list to collect drivers for upserting
+     */
     private void processDriversResponse(String jsonResponse, List<Driver> driversToUpsert) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -135,7 +177,17 @@ public class DriverAPIService {
         }
     }
 
-    // Method to handle rate limiting (HTTP 429) with exponential backoff
+    /**
+     * Handles rate-limiting errors by retrying the request with an exponential backoff.
+     *
+     * @param response the HTTP response
+     * @param request the request to retry
+     * @param sessionURL the session URL
+     * @param sessionKey the session key
+     * @param driversToUpsert the list of drivers to upsert
+     * @param retryCount the current retry count
+     * @param delayMs the delay between retries
+     */
     private void handleRateLimit(HttpResponse<String> response, HttpRequest request, String sessionURL, Integer sessionKey, List<Driver> driversToUpsert, int retryCount, int delayMs) {
         Optional<String> retryAfter = response.headers().firstValue("Retry-After");
         int retryDelay = retryAfter.map(Integer::parseInt).orElse(delayMs);  // Default to provided delay if Retry-After is missing
@@ -157,7 +209,13 @@ public class DriverAPIService {
     }
 
 
-    // Convenience method to fetch all races and drivers
+    /**
+     * Fetches drivers for all races from OpenF1 API.
+     *
+     * @return a list of drivers from OpenF1
+     * @throws IOException if there is an I/O error
+     * @throws InterruptedException if the thread is interrupted
+     */
     public List<Driver> fetchAllDriversFromOpenF1() throws IOException, InterruptedException {
         return fetchDriversFromOpenF1(raceService.getAllRaces());
     }

@@ -18,6 +18,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+/**
+ * Service for managing the latest session information.
+ *
+ * <p>This service is responsible for fetching the latest session data from the OpenF1 API,
+ * checking for new session availability, and saving or updating the latest session in the database.
+ */
 @Service
 public class LatestSessionService {
 
@@ -28,7 +34,13 @@ public class LatestSessionService {
 
     private static final String LATEST_SESSION_API_URL = "https://api.openf1.org/v1/sessions?session_key=latest";
 
-    // Fetch the latest session from OpenF1 API
+    /**
+     * Fetches the latest session available from the OpenF1 API.
+     *
+     * @return a {@link JsonNode} representing the latest session
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
     public JsonNode fetchLatestSessionFromOpenF1() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
@@ -47,12 +59,23 @@ public class LatestSessionService {
         }
     }
 
-    // Get the latest session saved in the MongoDB database
+    /**
+     * Retrieves the latest session stored in the MongoDB database.
+     *
+     * @return an {@link Optional} containing the latest session if found, or empty if not found
+     */
     public Optional<LatestSession> getLatestSessionFromDB() {
         return latestSessionRepository.findById("latest_session_id");
     }
 
-    // Check if new data is available by comparing OpenF1 latest session with the latest imported session
+    /**
+     * Checks if a new session is available by comparing the latest session in the database
+     * with the latest session from the OpenF1 API.
+     *
+     * @return {@code true} if a new session is available, {@code false} otherwise
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
     public boolean isNewSessionAvailable() throws IOException, InterruptedException {
         // Fetch the latest session from OpenF1 API
         JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1().get(0);
@@ -76,23 +99,40 @@ public class LatestSessionService {
         return false;  // No new session
     }
 
-    // Save or update the latest session in the MongoDB database
+    /**
+     * Add or update the latest session in the MongoDB database.
+     *
+     * @param latestSession the latest session to save or update
+     */
     public void saveLatestSession(LatestSession latestSession) {
         latestSessionRepository.save(latestSession);
     }
-    // Method to update the database with the latest session after import
-    public void updateLatestSession() throws IOException, InterruptedException {
+
+    /**
+     * Updates the latest session data after importing new telemetry.
+     *
+     * @return the updated {@link LatestSession} entity
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted
+     */
+    public LatestSession updateLatestSession() throws IOException, InterruptedException {
         JsonNode latestSessionFromAPI = fetchLatestSessionFromOpenF1().get(0);
         // Parse the end date string into a ZonedDateTime (to handle the time zone)
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(latestSessionFromAPI.get("date_end").asText());
         // Convert to LocalDate and format to the desired pattern (yyyy-MM-dd)
         String formattedDate = zonedDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        // Format an easily readable name for the latest session. ex. "Singapore Race 2024"
+        String formattedName =
+                latestSessionFromAPI.get("circuit_short_name").asText() + " "
+                        + latestSessionFromAPI.get("session_name").asText() + " "
+                        + latestSessionFromAPI.get("year").asText();
         LatestSession newLatestSession = new LatestSession(
                 "latest_session_id",  // Static ID to ensure single document
                 latestSessionFromAPI.get("session_key").asInt(),
                 formattedDate,
-                latestSessionFromAPI.get("session_name").asText()
+                formattedName
         );
         saveLatestSession(newLatestSession);  // Save or update in the database
+        return newLatestSession;
     }
 }
