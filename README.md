@@ -4,7 +4,7 @@ Spring Boot microservice with the following:
   - Modeling and Analysis of telemetry
   - REST API for persisting to and requesting from MongoDB
 ## Project Architecture
-![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/FormulaAnalysis.drawio.svg?raw=true)
+![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/FormulaAnalysis.drawio.png?raw=true)
 
 ## Project Structure
 
