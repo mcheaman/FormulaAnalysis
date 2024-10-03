@@ -6,6 +6,13 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Represents a driver in the racing context.
+ *
+ * <p>This class is mapped to the "drivers" collection in MongoDB using Spring Data's {@code @Document} annotation.
+ * Each driver has a unique {@code fullName} that serves as the identifier and contains other related data such as
+ * the driver's team, country code, driver number, and broadcast name.
+ */
 @Setter
 @Getter
 @AllArgsConstructor

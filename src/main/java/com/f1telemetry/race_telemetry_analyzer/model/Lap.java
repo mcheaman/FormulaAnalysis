@@ -6,6 +6,13 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Represents a lap in a race.
+ *
+ * <p>This class is mapped to the "laps" collection in MongoDB using Spring Data's {@code @Document} annotation.
+ * Each lap has an identifier composed of the session key, driver number, and lap number.
+ * It includes information such as lap duration, sector times, speed trap speed, and whether it was a pit out lap.
+ */
 @Setter
 @Getter
 @NoArgsConstructor

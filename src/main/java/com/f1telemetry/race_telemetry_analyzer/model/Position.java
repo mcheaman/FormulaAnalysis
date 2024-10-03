@@ -6,6 +6,12 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Represents the position of a driver in a race session.
+ *
+ * <p>This class is mapped to the "position" collection in MongoDB using Spring Data's {@code @Document} annotation.
+ * Each position has a composite key formed from the session key and driver number, along with the driver's position in the race.
+ */
 @Setter
 @Getter
 @NoArgsConstructor

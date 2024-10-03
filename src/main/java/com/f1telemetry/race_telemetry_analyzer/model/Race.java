@@ -7,6 +7,13 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Represents a race session.
+ *
+ * <p>This class is mapped to the "races" collection in MongoDB using Spring Data's {@code @Document} annotation.
+ * Each race is identified by a session key and contains other details like the year, session name, country, and circuit name.
+ */
+
 @Setter
 @Getter
 @AllArgsConstructor
