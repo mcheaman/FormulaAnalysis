@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST controller for managing driver data in the system.
+ *
+ * <p>This controller provides endpoints for CRUD (Create, Read, Update, Delete) operations
+ * on driver entities. It interacts with the {@link DriverService} to handle data persistence
+ * and business logic related to drivers.
+ */
 @RestController
 @RequestMapping("/api/drivers")
 public class DriverController {
@@ -25,34 +32,56 @@ public class DriverController {
         this.driverService = driverService;
     }
 
+    /**
+     * Retrieves all drivers from the system.
+     *
+     * <p>This method returns a list of all drivers currently stored in the database.
+     *
+     * @return a list of {@link Driver} entities
+     */
     @GetMapping
     public List<Driver> getAllDrivers() {
         return driverService.getAllDrivers();
     }
 
+    /**
+     * Retrieves a driver by their unique identifier.
+     *
+     * <p>If the driver is found, their information is returned with an HTTP 200 OK status.
+     * If the driver is not found, the method returns a 404 Not Found status.
+     *
+     * @param id the unique identifier of the driver
+     * @return a {@link ResponseEntity} containing the driver if found, or 404 if not
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Driver> getDriverById(@PathVariable String id) {
         Optional<Driver> driver = driverService.getDriverById(id);
         return driver.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Adds a new driver to the system.
+     *
+     * <p>This method creates a new driver and returns the saved entity with a 201 Created status.
+     *
+     * @param driver the driver to be added, provided in the request body
+     * @return a {@link ResponseEntity} containing the newly created driver
+     */
     @PostMapping
     public ResponseEntity<Driver> addDriver(@Validated @RequestBody Driver driver) {
         Driver savedDriver = driverService.addDriver(driver);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDriver);
     }
 
-    @PutMapping("/{name}")
-    public ResponseEntity<Driver> updateDriver(@PathVariable String name, @RequestBody Driver updatedDriverInfo) {
-        try {
-            Driver updatedDriver = driverService.addDriver(updatedDriverInfo);
-            return ResponseEntity.ok(updatedDriver);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-
+    /**
+     * Deletes a driver by their unique identifier.
+     *
+     * <p>If the driver is found, they are deleted from the system, and the method returns a 204 No Content status.
+     * If the driver is not found, the method returns a 404 Not Found status.
+     *
+     * @param id the unique identifier of the driver to delete
+     * @return a {@link ResponseEntity} with a 204 status if the deletion was successful, or 404 if the driver was not found
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDriver(@PathVariable String id) {
         logger.info("Deleting driver with id: {}", id);

@@ -10,6 +10,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * REST controller for managing lap data.
+ *
+ * <p>This controller provides endpoints to retrieve lap data. It interacts with
+ * the {@link LapService} for retrieving lap data from the local database and the {@link LapAPIService}
+ * for fetching lap data from the OpenF1 API.
+ */
 @RestController
 @RequestMapping("/api/laps")
 public class LapController {
@@ -20,21 +27,31 @@ public class LapController {
     @Autowired
     private LapAPIService lapAPIService;
 
-    // Endpoint to get all laps
+    /**
+     * Retrieves all lap data from the database.
+     *
+     * <p>This method returns a list of all laps currently stored in the system.
+     *
+     * @return a list of {@link Lap} entities
+     */
     @GetMapping
     public List<Lap> getAllLaps() {
         return lapService.getAllLaps();
     }
 
-    // Endpoint to get laps by driver number and session key
+    /**
+     * Retrieves lap data for a specific session and driver.
+     *
+     * <p>This method retrieves laps based on the session key and driver number, returning all laps
+     * for the specified session and driver.
+     *
+     * @param sessionKey the session key identifying the race session
+     * @param driverNumber the driver number to filter lap data by
+     * @return a list of {@link Lap} entities for the specified session and driver
+     */
     @GetMapping("/session/{sessionKey}/driver/{driverNumber}")
     public List<Lap> getLapsBySessionAndDriver(@PathVariable Integer sessionKey, @PathVariable Integer driverNumber) {
         return lapService.getLapsBySessionAndDriver(sessionKey, driverNumber);
     }
 
-    // Endpoint to import laps from OpenF1 for a specific session and driver
-    @PostMapping("/import/session/{sessionKey}/driver/{driverNumber}")
-    public List<Lap> fetchLapsFromOpenF1(@PathVariable Integer sessionKey, @PathVariable Integer driverNumber) throws IOException, InterruptedException, ExecutionException {
-        return lapAPIService.fetchLapsBySessionAndDriverFromOpenF1(sessionKey, driverNumber);
-    }
 }
