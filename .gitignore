@@ -1,19 +1,47 @@
 # Maven build directory
-/target/
+/TelemetryImportService/target/
 
 # Maven specific files
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
+/TelemetryImportService/pom.xml.tag
+/TelemetryImportService/pom.xml.releaseBackup
+/TelemetryImportService/pom.xml.versionsBackup
+/TelemetryImportService/pom.xml.next
+/TelemetryImportService/release.properties
+/TelemetryImportService/dependency-reduced-pom.xml
 
-# MacOS
+# Logs
+*.log
+/TelemetryImportService/logs/
+/TelemetryImportService/*.log
+
+# Python specific
+/ETLProcess/__pycache__/
+/ETLProcess/*.pyc
+/ETLProcess/*.pyo
+/ETLProcess/.pytest_cache
+/ETLProcess/.venv
+/ETLProcess/venv/
+
+# Python virtual environment
+/ETLProcess/env/
+/ETLProcess/.env
+
+# MacOS specific
 .DS_Store
 
 # IDE specific files (e.g., IntelliJ, Eclipse, VS Code)
 ### IntelliJ IDEA ###
 .idea/
-*.iml
-*.i
+/*.iml
+/TelemetryImportService/*.iml
+/ETLProcess/*.iml
+
+### VS Code ###
+.vscode/
+
+# Ignore generated files like compiled Python bytecode
+*.py[cod]
+
+# Temporary files and folders
+*.swp
+*~
