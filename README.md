@@ -44,5 +44,16 @@ Repository interfaces that interact with MongoDB for data persistence using Spri
   <summary><strong>ETLProcess</strong></summary>
 
 This service utilizes the data of TelemetryImportService to demonstrate competency in ETL processes, PostgreSQL, and data visualization through Grafana.
+### `extract.py`
+This file handles the extraction of data from MongoDB, connecting to the database and retrieving raw telemetry data from the relevant collections.
+
+### `transform.py`
+This file processes and transforms the raw data extracted from MongoDB into a format suitable for a relational database, converting nested structures into flat tables.
+
+### `load.py`
+This file loads the transformed data into a PostgreSQL cloud database by inserting it into the appropriate relational tables.
+
+### `main_etl.py`
+This is the main orchestrator of the ETL pipeline. It coordinates the process by sequentially calling the `extract`, `transform`, and `load` functions to execute the full ETL workflow.
 
 </details>
