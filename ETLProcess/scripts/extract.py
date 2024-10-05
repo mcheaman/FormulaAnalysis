@@ -120,4 +120,3 @@ def import_to_json_file(db, filename):
         print(f"Data saved to {filename}")
     except Exception as e:
         print(f"Error writing to file: {e}")
-
