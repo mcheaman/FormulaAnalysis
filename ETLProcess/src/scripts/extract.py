@@ -12,109 +12,86 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-def connect_to_mongo(uri, db_name):
+class Extract:
     """
-    Connect to the MongoDB database.
-
-    Args:
-        uri (str): The MongoDB connection URI.
-        db_name (str): The name of the database to connect to.
-
-    Returns:
-        db (Database): A reference to the MongoDB database.
+    A class that handles the extraction of data from MongoDB. 
+    This class initializes the MongoDB connection and provides methods to extract data.
     """
-    try:
-        # Create a MongoClient object
-        client = MongoClient(uri)
-        
-        # Access the database
-        db = client[db_name]
-        
-        print("Connected to MongoDB")
-        return db
 
-    except errors.ConnectionFailure as e:
-        print(f"Error connecting to MongoDB: {e}")
-    except errors.ConfigurationError as e:
-        print(f"Configuration error: {e}")
-    except Exception as e: 
-        print(f"An unexpected error occurred: {e}")
+    def __init__(self):
+        """
+        Initializes the MongoDB client using environment variables.
+        """
+        self.client = None
+        self.db = None
+        self._connect_to_mongo()
 
-def extract_all_data(db): 
-    """
-    Extract data from all collections MongoDB.
+    def _connect_to_mongo(self):
+        """
+        Private method to connect to the MongoDB database.
+        """
+        try:
+            user = os.getenv('MONGO_DB_USER')
+            password = os.getenv('MONGO_DB_PASSWORD')
+            db_name = os.getenv('MONGO_DB_NAME')
 
-    Args:
-        db (Database): A reference to the MongoDB database.
+            uri = f"mongodb+srv://{user}:{password}@cluster0.5ztoj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+            # Create MongoClient and connect to the database
+            self.client = MongoClient(uri)
+            self.db = self.client[db_name]
+            print("Connected to MongoDB")
 
-    Returns:
-        extracted_data (list or dict): The raw data extracted from MongoDB.
-    """
-    try:
-        drivers_collection = db['drivers']
-        races_collection = db['races']
-        position_collection = db['position']
-        laps_collection = db['laps']
-        latest_session_collection = db['latest_session']
-        
-        drivers = list(drivers_collection.find({}))
-        races = list(races_collection.find({}))
-        position = list(position_collection.find({}))
-        laps = list(laps_collection.find({}))
-        latest_session = list(latest_session_collection.find({}))
-        
-        extracted_data = {
-            'drivers': drivers,
-            'races': races,
-            'position': position,
-            'laps': laps,
-            'latest_session': latest_session
-        }
-        print("Data extraction complete")
-        return extracted_data
-    except Exception as e:
-        print(f"Error extracting data: {e}")
+        except errors.ConnectionFailure as e:
+            print(f"Error connecting to MongoDB: {e}")
+        except errors.ConfigurationError as e:
+            print(f"Configuration error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
 
-def extract():
-    """
-    Extract data from MongoDB.
+    def extract(self):
+        """
+        Extract data from all MongoDB collections.
 
-    Connects to MongoDB, queries the necessary collections, and retrieves raw data.
+        Returns:
+            dict: The raw data extracted from MongoDB.
+        """
+        try:
+            drivers_collection = self.db['drivers']
+            races_collection = self.db['races']
+            position_collection = self.db['position']
+            laps_collection = self.db['laps']
+            latest_session_collection = self.db['latest_session']
 
-    Returns:
-        extracted_data (dict or list): The raw data extracted from MongoDB.
-    """
-    # Get credentials from environment variables
-    user = os.getenv('MONGO_DB_USER')
-    password = os.getenv('MONGO_DB_PASSWORD')
-    db_name = os.getenv('MONGO_DB_NAME')
-    
-    # Construct the MongoDB connection URI using the environment variables
-    uri = f"mongodb+srv://{user}:{password}@cluster0.5ztoj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    db = connect_to_mongo(uri, db_name)
+            drivers = list(drivers_collection.find({}))
+            races = list(races_collection.find({}))
+            position = list(position_collection.find({}))
+            laps = list(laps_collection.find({}))
+            latest_session = list(latest_session_collection.find({}))
 
-    # If connection is successful, extract data
-    if db is not None:
-        extracted_data = extract_all_data(db)
-        return extracted_data
+            extracted_data = {
+                'drivers': drivers,
+                'races': races,
+                'position': position,
+                'laps': laps,
+                'latest_session': latest_session
+            }
+            print("Data extraction complete")
+            return extracted_data
+        except Exception as e:
+            print(f"Error extracting data: {e}")
 
+    def save_to_json_file(self, filename):
+        """
+        Save the extracted data to a JSON file for verification.
 
-def import_to_json_file(db, filename):
-    """
-    Extract data and save to json file for verification
+        Args:
+            filename (str): The name of the file to save the data to.
+        """
+        data = self.extract()
+        try:
+            with open(filename, 'w', encoding='UTF-8') as f:
+                json.dump(data, f, indent=4)
+            print(f"Data saved to {filename}")
+        except Exception as e:
+            print(f"Error writing to file: {e}")
 
-    Args:
-        db (dict): The extracted data to save.
-        filename (str): The name of the file to save the data to.
-
-    Returns:
-        None
-    """
-    data = extract_all_data(db)
-    try:
-        with open(filename, 'w', encoding='UTF-8') as f:
-            # Write data to file in JSON format
-            json.dump(data, f, indent=4)
-        print(f"Data saved to {filename}")
-    except Exception as e:
-        print(f"Error writing to file: {e}")
