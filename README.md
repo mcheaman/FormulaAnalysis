@@ -9,17 +9,15 @@ Personal project to demonstrate competency in the following areas:
   - ETL processes
 
 The project is split into two main services: **TelemetryImportService** and **ETLProcess**. They are defined in more detail below.
-
+## TelemetryImportService
+![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/TelemetryImportService/TelemetryImportService.drawio.png?raw=true)
 <details>
-  <summary><strong>TelemetryImportService</strong></summary>
+  <summary>Details</summary>
 
 Java Spring Boot microservice with the following:  
   - Ingestion of Formula 1 telemetry from OpenF1API
   - Modeling and Analysis of telemetry
   - REST API for persisting to and requesting from MongoDB
-
-### Project Architecture
-![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/TelemetryImportService/TelemetryImportService.drawio.png?raw=true)
 
 ### Project Structure
 
@@ -38,10 +36,12 @@ REST controllers that handle incoming HTTP requests and route them to the approp
 #### [repository](https://github.com/mcheaman/FormulaAnalysis/tree/main/TelemetryImportService/src/main/java/com/f1telemetry/race_telemetry_analyzer/repository)  
 Repository interfaces that interact with MongoDB for data persistence using Spring Data.
 
-</details>
+</details>  
 
+## ETL Process  
+![Architecture Diagram](https://github.com/mcheaman/FormulaAnalysis/blob/main/ETLProcess/ETLProcess.drawio.png?raw=true)
 <details>
-  <summary><strong>ETLProcess</strong></summary>
+  <summary>Details</summary>
 
 This service utilizes the data of TelemetryImportService to demonstrate competency in ETL processes, PostgreSQL, and data visualization through Grafana.
 ### `extract.py`
